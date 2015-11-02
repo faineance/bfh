@@ -25,12 +25,14 @@ parseBF = parse (many instr) "bf"
 type Cell = Int
 type Tape = ([Cell], Cell, [Cell])
 
-eval' :: Tape ->  Instruction -> Tape
-eval' (ls, c, r:rs) Next = (c:ls, r, rs)
-eval' (l:ls, c, rs) Prev = (ls, l, c:rs)
-eval' (ls, c, rs)   Inc  = (ls, c+1, rs)
-eval' (ls, c, rs)   Dec  = (ls, c-1, rs)
 
 
-eval :: Program -> Tape
-eval = foldl eval' (repeat 0, 0, repeat 0)
+
+evalBF :: Program -> Tape
+evalBF = foldl evalBF' (repeat 0, 0, repeat 0)
+    where
+        evalBF' :: Tape ->  Instruction -> Tape
+        evalBF' (ls, c, r:rs) Next = (c:ls, r, rs)
+        evalBF' (l:ls, c, rs) Prev = (ls, l, c:rs)
+        evalBF' (ls, c, rs)   Inc  = (ls, c+1, rs)
+        evalBF' (ls, c, rs)   Dec  = (ls, c-1, rs)
