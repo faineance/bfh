@@ -22,11 +22,9 @@ instr = (char '>' >> return Next)
 parseBF :: String -> Either ParseError Program
 parseBF = parse (many instr) "bf"
 
+
 type Cell = Int
 type Tape = ([Cell], Cell, [Cell])
-
-
-
 
 evalBF :: Program -> Tape
 evalBF = foldl evalBF' (repeat 0, 0, repeat 0)
