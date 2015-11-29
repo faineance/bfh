@@ -1,6 +1,6 @@
 module Brainfuck where
 import           Text.ParserCombinators.Parsec
-
+import Control.Monad
 data Instruction = Next | Prev | Inc | Dec | Read | Write | Loop [Instruction]
                 deriving (Show, Eq)
 
@@ -26,11 +26,14 @@ parseBF = parse (many instr) "bf"
 type Cell = Int
 type Tape = ([Cell], Cell, [Cell])
 
-evalBF :: Program -> Tape
-evalBF = foldl evalBF' (repeat 0, 0, repeat 0)
+evalBF :: Program -> IO Tape
+evalBF = foldM evalBF' (repeat 0, 0, repeat 0)
     where
-        evalBF' :: Tape ->  Instruction -> Tape
-        evalBF' (ls, c, r:rs) Next = (c:ls, r, rs)
-        evalBF' (l:ls, c, rs) Prev = (ls, l, c:rs)
-        evalBF' (ls, c, rs)   Inc  = (ls, c+1, rs)
-        evalBF' (ls, c, rs)   Dec  = (ls, c-1, rs)
+        evalBF' :: Tape ->  Instruction -> IO Tape
+        evalBF' (ls, c, r:rs) Next = return (c:ls, r, rs)
+        evalBF' (l:ls, c, rs) Prev = return (ls, l, c:rs)
+        evalBF' (ls, c, rs)   Inc  = return (ls, c+1, rs)
+        evalBF' (ls, c, rs)   Dec  = return (ls, c-1, rs)
+        evalBF' (ls, c, rs)   Write = do
+                                        print c
+                                        return (ls, c, rs)
