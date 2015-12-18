@@ -13,10 +13,7 @@ instr = (char '>' >> return Next)
            <|> (char '-' >> return Dec)
            <|> (char ',' >> return Read)
            <|> (char '.' >> return Write)
-           <|> do _ <- char '['
-                  instrs <- many instr
-                  _ <- char ']'
-                  return . Loop $ instrs
+           <|> Loop <$> (char '[' *> many instr <* char ']')
 
 
 parseBF :: String -> Either ParseError Program
