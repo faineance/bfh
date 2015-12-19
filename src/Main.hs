@@ -13,5 +13,5 @@ main = do
         case parseBF contents of
              Left err -> print err
              Right program -> do
-                            _ <- evalBF program
+                            _ <- evalBF (repeat 0, 0, repeat 0) program
                             return ()
