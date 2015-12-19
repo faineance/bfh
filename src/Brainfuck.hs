@@ -38,5 +38,8 @@ evalBF = foldM evalBF'
         evalBF' (ls, c, rs)   Write = do
                                         putChar . toEnum $ fromIntegral c
                                         return (ls, c, rs)
-        evalBF' tape (Loop prog) = evalBF tape prog
-        evalBF' (ls, 0, rs) (Loop _) = return (ls, 0, rs)
+        evalBF' tape (Loop prog) = loop tape prog
+        loop tape@(_, 0, _) _ = return tape
+        loop tape prog = do
+            tape' <- evalBF tape prog
+            loop tape' prog
