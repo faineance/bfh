@@ -1,5 +1,4 @@
 module Brainfuck where
-import           System.Environment (getArgs)
 import           Text.ParserCombinators.Parsec
 import Data.Word
 import Control.Monad
@@ -10,13 +9,14 @@ data Instruction = Next | Prev | Inc | Dec | Read | Write | Loop [Instruction]
 type Program = [Instruction]
 
 instr :: Parser Instruction
-instr = (char '>' >> return Next)
-           <|> (char '<' >> return Prev)
-           <|> (char '+' >> return Inc)
-           <|> (char '-' >> return Dec)
-           <|> (char ',' >> return Read)
-           <|> (char '.' >> return Write)
-           <|> Loop <$> (char '[' *> many instr <* char ']')
+instr = msum [ i <$ char c | (c, i) <- instructions ] <|> Loop <$> (char '[' *> many instr <* char ']')
+ where instructions =
+         [ ('>', Next)
+         , ('<', Prev)
+         , ('+', Inc)
+         , ('-', Dec)
+         , (',', Read)
+         , ('.', Write)]
 
 
 parseBF :: String -> Either ParseError Program
